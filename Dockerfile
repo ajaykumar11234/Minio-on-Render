@@ -1,16 +1,16 @@
-# Use the official MinIO image
+# Use official MinIO image
 FROM minio/minio:latest
 
-# --- Environment Variables ---
-# Render injects $PORT dynamically; default 10000 for local runs
+# --- Credentials ---
 ENV MINIO_ROOT_USER=minioadmin
 ENV MINIO_ROOT_PASSWORD=minioadmin
-ENV PORT=10000
 
-# --- Expose only one port (Render’s public port) ---
-EXPOSE 10000
+# --- Render's dynamic port (default for local) ---
+ENV PORT=9001
 
-# --- Run both MinIO API and Console on the same Render port ---
-# The trick: Console runs on /minio, API stays at root
+# --- Expose only the console port (Render scans this) ---
+EXPOSE 9001
+
+# --- Run MinIO API internally on 9000, Console on Render's $PORT ---
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["minio server /data --address :${PORT} --console-address :${PORT}"]
+CMD ["minio server /data --address :9000 --console-address :${PORT}"]
