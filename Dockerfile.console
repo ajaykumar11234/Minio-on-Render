@@ -1,10 +1,7 @@
 FROM nginx:alpine
 
-# Copy nginx template
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose a placeholder port (Render sets its own)
 EXPOSE 8080
 
-# Replace $PORT dynamically, then start NGINX
-CMD sh -c 'envsubst "${PORT}" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"'
+CMD sh -c 'sed "s/PORT_NUMBER/${PORT}/" /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"'
