@@ -1,12 +1,8 @@
 FROM nginx:alpine
 
-# default for local testing; Render will inject its own PORT at runtime
-ENV PORT=10000
-
-# copy the template (we'll substitute $PORT at runtime)
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy config directly (no variable substitution)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 10000
 
-# Substitute $PORT into the template and write to conf.d, then start nginx
-CMD ["sh", "-c", "envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]
