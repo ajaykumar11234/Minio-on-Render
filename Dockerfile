@@ -4,25 +4,26 @@
 FROM alpine:latest
 
 # --- Install dependencies ---
-RUN apk add --no-cache minio nginx bash curl
+RUN apk add --no-cache bash curl nginx minio
 
-# --- Environment variables ---
+# --- Set environment variables ---
 ENV MINIO_ROOT_USER=minioadmin
 ENV MINIO_ROOT_PASSWORD=minioadmin
 ENV PORT=9000
 
 # --- Setup directories ---
-RUN mkdir -p /data /etc/nginx/templates
+RUN mkdir -p /data /etc/nginx/templates /run/nginx
 
 # --- Copy NGINX template ---
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# --- Expose Render public port ---
+# --- Expose public port (Render maps this automatically) ---
 EXPOSE 9000
 
-# --- Start both MinIO + NGINX ---
+# --- Start both MinIO and NGINX ---
 CMD bash -c '\
-  minio server /data --address :${PORT} --console-address :9001 & \
+  echo "🚀 Starting MinIO + NGINX..." && \
+  minio server /data --address :9000 --console-address :9001 & \
   sleep 3 && \
   sed "s/PORT_NUMBER/${PORT}/" /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && \
   nginx -g "daemon off;"'
