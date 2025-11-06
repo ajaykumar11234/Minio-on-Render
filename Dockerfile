@@ -1,5 +1,5 @@
 # ======================================================
-# 🧠 Combined MinIO + NGINX for Render (Port Fix)
+# 🧠 Combined MinIO + NGINX for Render (Stable Final)
 # ======================================================
 FROM alpine:latest
 
@@ -9,7 +9,9 @@ RUN apk add --no-cache bash curl nginx minio
 # --- Environment variables ---
 ENV MINIO_ROOT_USER=minioadmin
 ENV MINIO_ROOT_PASSWORD=minioadmin
-ENV PORT=8080   # Render’s public port, NGINX listens here
+
+# Render’s public port (NGINX listens here)
+ENV PORT=8080
 
 # --- Setup directories ---
 RUN mkdir -p /data /etc/nginx/templates /run/nginx /etc/nginx/http.d
@@ -17,7 +19,7 @@ RUN mkdir -p /data /etc/nginx/templates /run/nginx /etc/nginx/http.d
 # --- Copy NGINX template ---
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# --- Expose only the NGINX port (Render maps this to the public URL) ---
+# --- Expose public port ---
 EXPOSE 8080
 
 # --- Start both MinIO + NGINX ---
