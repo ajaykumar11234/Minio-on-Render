@@ -1,8 +1,9 @@
 FROM nginx:alpine
 
-# Copy config directly (no variable substitution)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy template for dynamic port substitution
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-EXPOSE 10000
+EXPOSE 8080  # optional, Render sets its own $PORT
 
-CMD ["nginx", "-g", "daemon off;"]
+# Substitute $PORT at runtime and start NGINX
+CMD sh -c 'envsubst "$PORT" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"'
